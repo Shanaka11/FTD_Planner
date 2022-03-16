@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "project_template"
+version = "0.1.0"
+description = "A Boilerplate template for starting FTD django projects with dependancies and settings configured"
+authors = ["shanaka11 <shanakaabeysinghe@gmail.com>"]
+license = "MIT"
+
+#Uncomment below lines to connect the private repo
+#[[tool.poetry.source]]
+#name = "ftd"
+#url = "https://test-repo-777170128162.d.codeartifact.us-east-2.amazonaws.com/pypi/ftd-repo/simple"
+#secondary = true
+
+[tool.poetry.dependencies]
+python = "^3.9"
+Django = "^3.2.12"
+djangorestframework = "^3.13.1"
+django-environ = "^0.8.1"
+django-cors-headers = "^3.11.0"
+django-filter = "^21.1"
+jwt = "^1.3.1"
+djangorestframework-simplejwt = "^5.1.0"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
