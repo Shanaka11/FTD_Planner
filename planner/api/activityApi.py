@@ -12,7 +12,7 @@ from ..filters.activityFilter import ActivityFilter
 
 class ActivityApi(BaseApi):
 
-    serilizer_class = ActivitySerializer
+    serializer_class = ActivitySerializer
     queryset = Activity.objects.all()
     filterset_class = ActivityFilter
 

@@ -11,7 +11,7 @@ from ..serializers.reservationSerializer import ReservationSerializer
 from ..filters.reservationFilter import ReservationFilter
 
 class ReservationApi(BaseApi):
-    serilizer_class = ReservationSerializer
+    serializer_class = ReservationSerializer
     queryset = Reservation.objects.all()
     filterset_class = ReservationFilter
 
