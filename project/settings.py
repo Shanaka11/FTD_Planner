@@ -51,8 +51,9 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_filters',
     # FTD
-    'ftd_auth'
+    'ftd_auth',
     # Local
+    'planner'
 ]
 
 MIDDLEWARE = [
