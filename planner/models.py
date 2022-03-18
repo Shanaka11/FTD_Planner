@@ -13,7 +13,8 @@ class Activity(models.Model):
     description = models.CharField(max_length=200, blank=True, null=True)
     color = models.CharField(max_length=20, blank=True, null=True)
     repeat = models.CharField(max_length=20, choices=Repeat.choices, default=Repeat.NEVER)
-
+    repeatUntil = models.DateTimeField(blank=True, null=True)
+    
     def __str__(self):
         return self.title
 

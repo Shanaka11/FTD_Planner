@@ -4,5 +4,5 @@ class Repeat(models.TextChoices):
     NEVER = 'Never'
     DAILY = 'Daily'
     WEEKLY = 'Weekly'
-    BYWEEKLY = 'Biweekly'
+    BIWEEKLY = 'Biweekly'
     MONTHLY = 'Monthly'

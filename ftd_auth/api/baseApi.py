@@ -9,12 +9,8 @@ from rest_framework.response import Response
 class BaseApi(viewsets.ModelViewSet):
 
     # Show all entries
-    def get_queryset_all(self):
-        return self.queryset
-        
-    # Only show data connected to the user
-    def get_queryset(self):
-        return self.queryset.filter(user=self.request.user)
+    # def get_queryset_all(self):
+    #     return self.queryset
 
     @action(detail=False, methods=['get'])
     def getFilters(self, request, **kwargs):
