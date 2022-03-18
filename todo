@@ -1,4 +1,6 @@
-- Create Reservations When Activities are created (For now do not consider repeats)
-- Get Reservations for a perticular date range
-- Validate users before letting the see either Activities or Reservations
-- Handle Activity Updates ? Mainly changing reservations
+- Create Reservations When Activities are created (For now do not consider repeats) (Done)
+- Get Reservations for a perticular date range (Done)
+- Validate users before letting the see either Activities or Reservations (Done)
+- Handle Activity Updates ? Mainly changing reservations (Done - Only Reservation Time updates)
+
+- Batch Delete Future Reservations (In case we change repeat and repeat until in the activity)
