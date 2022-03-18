@@ -17,9 +17,7 @@ class ActivityApi(BaseApi):
     filterset_class = ActivityFilter
 
     def list(self, request, *args, **kwargs):
-        activities = self.queryset.filter(user__id=request.user.id)
-        serializer = self.get_serializer(activities, many=True)
-        return Response(serializer.data)
+        return super().list(request, *args, **kwargs)
 
     def create(self, request, *args, **kwargs):
         # After creating the activity make the reservations
