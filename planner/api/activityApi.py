@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from ftd_auth.api.baseApi import BaseApi
 from planner.api.reservationApi import ReservationApi
 # Local
-from ..models import Activity
+from ..models import Activity, Reservation
 from ..serializers.activitySerializer import ActivitySerializer, FullActivitySerializer
 from ..filters.activityFilter import ActivityFilter
 
@@ -69,16 +69,34 @@ class ActivityApi(BaseApi):
     def update(self, request, *args, **kwargs):
         """
         request.data = {
+            id: ''
             title: ''
             description: ''
             color: ''
             repeat: 'Never'
-            repeaUntil: ''
+            repeatUntil: ''
         }
-        ** For initial requirment do not send repeat value
-        ** Dates are for reservation
         """
-        response = super().update(request, *args, **kwargs)
+        # Fetch Existing Record
+        oldActivity = Activity.objects.get(id=request.data["id"])
+
+        tempRequest = request
+        tempRequest.data["user"] = oldActivity.user.id
+
+        response = super().update(tempRequest, *args, **kwargs)
+
+        if oldActivity.repeat != request.data["repeat"] and oldActivity.repeatUntil != request.data["repeatUntil"]:
+            # Remove all future occurances
+            # Regenarate from the latest date
+            changed = True
+        elif oldActivity.repeat != request.data["repeat"]:
+            # Remove all future occurances
+            # Regenarate from the latest date
+            changed = True
+        elif oldActivity.repeatUntil != request.data["repeatUntil"]:
+            # Remove events from old repeatUntil to new repeatUntil
+            changed = True
+
         return response
 
     def destroy(self, request, *args, **kwargs):
@@ -92,7 +110,10 @@ class ActivityApi(BaseApi):
         startDate = datetime.datetime.strptime(startDate, "%Y%m%d").date()
         endDate = datetime.datetime.strptime(endDate, "%Y%m%d").date()
 
-        queryset = self.get_queryset().filter(reservation__startTime__range=[startDate, endDate])
+        # queryset = self.get_queryset().filter(reservation__startTime__range=[startDate, endDate])
+        queryset = Activity.objects.filter(user=request.user)
+        queryset = queryset.filter(reservation__startTime__range=[startDate, endDate]).distinct()
         serializer = FullActivitySerializer(queryset, many=True)
 
+        print(queryset.filter(reservation__startTime__range=[startDate, endDate]).distinct().query)
         return Response(serializer.data, status=200)

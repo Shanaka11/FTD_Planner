@@ -1,7 +1,8 @@
 # Python
 # Django
+from calendar import month
+import datetime
 # Rest Framework
-from venv import create
 from rest_framework.decorators import action
 from rest_framework.response import Response
 # Base
@@ -10,6 +11,7 @@ from ftd_auth.api.baseApi import BaseApi
 from ..models import Reservation
 from ..serializers.reservationSerializer import ReservationSerializer
 from ..filters.reservationFilter import ReservationFilter
+from ..enums import Repeat
 
 class ReservationApi(BaseApi):
     serializer_class = ReservationSerializer
@@ -38,13 +40,52 @@ class ReservationApi(BaseApi):
     # Make Reservations
     def makeReservations(reservationData):
         # Make Reservations & Handle Overlaps
-        temp_data = {
-            "activity" : reservationData["activity"],
-            "startTime" : reservationData["startTime"],
-            "endTime" : reservationData["endTime"]
-        }
-        serializer = ReservationSerializer(data=temp_data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
+        tempStart = reservationData["startTime"]
+        tempEnd = reservationData["endTime"]
+        repeat = reservationData["repeat"]
+        repeatUntil = datetime.datetime.strptime(reservationData["repeatUntil"],'%Y-%m-%dT%H:%M:%S%z')
+
+        def makeReservation(data, increment):
+            tempStart = datetime.datetime.strptime(data["startTime"], '%Y-%m-%dT%H:%M:%S%z')
+            tempEnd = datetime.datetime.strptime(data["endTime"], '%Y-%m-%dT%H:%M:%S%z')
+            
+
+            while(tempEnd < repeatUntil):
+                data["startTime"] = tempStart
+                data["endTime"] = tempEnd
+
+                serializer = ReservationSerializer(data=data)
+                if serializer.is_valid(raise_exception=True):
+                    serializer.save()
+                if increment > 29:
+                    tempStart = tempStart + datetime.timedelta(months=1)
+                    tempEnd = tempEnd + datetime.timedelta(months=1)
+                else:
+                    tempStart = tempStart + datetime.timedelta(days=increment)
+                    tempEnd = tempEnd + datetime.timedelta(days=increment)
+
+        if(repeat == Repeat.NEVER):
+            tempData = {
+                "activity" : reservationData["activity"],
+                "startTime" : tempStart,
+                "endTime" : tempEnd
+            }
+            serializer = ReservationSerializer(data=tempData)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
+        else:
+            tempData = {
+                "activity": reservationData["activity"],
+                "startTime": tempStart,
+                "endTime": tempEnd
+            }
+            if repeat == Repeat.DAILY:
+                makeReservation(tempData, 1)
+            elif repeat == Repeat.WEEKLY:
+                makeReservation(tempData, 7)
+            elif repeat == Repeat.BIWEEKLY:
+                makeReservation(tempData, 14)
+            elif repeat == Repeat.MONTHLY:
+                makeReservation(tempData, 30)
 
     # Remove Reservations on Date Range

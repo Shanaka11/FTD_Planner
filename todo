@@ -4,3 +4,9 @@
 - Handle Activity Updates ? Mainly changing reservations (Done - Only Reservation Time updates)
 
 - Batch Delete Future Reservations (In case we change repeat and repeat until in the activity)
+- Handle Rest of the repeat values
+    - Never (Done)
+    - Daily (Done)
+    - Weekly
+    - Biweekly
+    - Monthly
