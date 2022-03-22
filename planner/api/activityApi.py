@@ -1,8 +1,7 @@
 # Python
 # Django
 import datetime
-from multiprocessing import context
-from urllib import response
+import pytz
 from django.db.transaction import atomic
 # Rest Framework
 from rest_framework.decorators import action
@@ -66,7 +65,8 @@ class ActivityApi(BaseApi):
 
     def retrieve(self, request, *args, **kwargs):
         return super().retrieve(request, *args, **kwargs)
-
+    
+    @atomic
     def update(self, request, *args, **kwargs):
         """
         request.data = {
@@ -86,17 +86,21 @@ class ActivityApi(BaseApi):
 
         response = super().update(tempRequest, *args, **kwargs)
 
-        if oldActivity.repeat != request.data["repeat"] and oldActivity.repeatUntil != request.data["repeatUntil"]:
+        if oldActivity.repeat != request.data["repeat"] or oldActivity.repeatUntil != request.data["repeatUntil"]:
             # Remove all future occurances
+            today = datetime.datetime.now(pytz.utc)
+            reservations = Reservation.objects.filter(activity = request.data['id'])
+            reservations = reservations.filter(endTime__gte=today).delete()
             # Regenarate from the latest date
-            changed = True
-        elif oldActivity.repeat != request.data["repeat"]:
-            # Remove all future occurances
-            # Regenarate from the latest date
-            changed = True
-        elif oldActivity.repeatUntil != request.data["repeatUntil"]:
-            # Remove events from old repeatUntil to new repeatUntil
-            changed = True
+            # If startDate > today then generate from startDate, else generateFrom today
+            ReservationApi.makeReservations({
+                "activity": tempRequest.data["id"],
+                "startTime": tempRequest.data["startTime"],
+                "endTime": tempRequest.data["endTime"],
+                "repeat": tempRequest.data['repeat'],
+                "repeatUntil": tempRequest.data['repeatUntil'],
+                "today": today
+            })
 
         return response
 

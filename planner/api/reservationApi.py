@@ -44,17 +44,24 @@ class ReservationApi(BaseApi):
         tempStart = reservationData["startTime"]
         tempEnd = reservationData["endTime"]
         repeat = reservationData["repeat"]
+        today = reservationData["today"]
         repeatUntil = datetime.datetime.strptime(reservationData["repeatUntil"],'%Y-%m-%dT%H:%M:%S%z')
 
         def makeReservation(data, increment):
             tempStart = datetime.datetime.strptime(data["startTime"], '%Y-%m-%dT%H:%M:%S%z')
             tempEnd = datetime.datetime.strptime(data["endTime"], '%Y-%m-%dT%H:%M:%S%z')
             
+            if today is not None:
+                while tempStart < today:
+                    if increment > 29:
+                        tempStart = tempStart + relativedelta(months = 1)
+                    else:
+                        tempStart = tempStart + datetime.timedelta(days=increment)
 
             while(tempEnd < repeatUntil):
                 data["startTime"] = tempStart
                 data["endTime"] = tempEnd
-
+                
                 serializer = ReservationSerializer(data=data)
                 if serializer.is_valid(raise_exception=True):
                     serializer.save()
