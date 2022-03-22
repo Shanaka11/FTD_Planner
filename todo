@@ -1,7 +1,7 @@
 - Create Reservations When Activities are created (For now do not consider repeats) (Done)
 - Get Reservations for a perticular date range (Done)
 - Validate users before letting the see either Activities or Reservations (Done)
-- Handle Activity Updates ? Mainly changing reservations (Done - Only Reservation Time updates) (Handle updates to repeat and repeat until consider sysdate as well)
+- Handle Activity Updates ? Mainly changing reservations (Done - Only Reservation Time updates) (Handle updates to repeat and repeat until consider sysdate as well) (Done)
 
 - Batch Delete Future Reservations (In case we change repeat and repeat until in the activity)
 - Handle Rest of the repeat values
