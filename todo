@@ -7,9 +7,9 @@
 - Handle Rest of the repeat values
     - Never (Done)
     - Daily (Done)
-    - Weekly
-    - Biweekly
-    - Monthly
+    - Weekly (Done)
+    - Biweekly (Done)
+    - Monthly (Done)
 
 
 - Fix This error in get active reservations end point (Done)
@@ -19,3 +19,5 @@
     warnings.warn("DateTimeField %s received a naive datetime (%s)"
 
 - When selecting try to only display reservations that falls within the given period. currently even if a single reservation is within the period it returns the whole reservation set (Done)
+
+- Write Tests
