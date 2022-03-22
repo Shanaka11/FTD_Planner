@@ -1,7 +1,7 @@
 - Create Reservations When Activities are created (For now do not consider repeats) (Done)
 - Get Reservations for a perticular date range (Done)
 - Validate users before letting the see either Activities or Reservations (Done)
-- Handle Activity Updates ? Mainly changing reservations (Done - Only Reservation Time updates)
+- Handle Activity Updates ? Mainly changing reservations (Done - Only Reservation Time updates) (Handle updates to repeat and repeat until consider sysdate as well)
 
 - Batch Delete Future Reservations (In case we change repeat and repeat until in the activity)
 - Handle Rest of the repeat values
@@ -10,3 +10,12 @@
     - Weekly
     - Biweekly
     - Monthly
+
+
+- Fix This error in get active reservations end point (Done)
+    RuntimeWarning: DateTimeField Reservation.startTime received a naive datetime (2022-05-01 00:00:00) while time zone support is active.
+    warnings.warn("DateTimeField %s received a naive datetime (%s)"
+    /Users/shanaka/Library/Caches/pypoetry/virtualenvs/project-template-3krDrfLX-py3.9/lib/python3.9/site-packages/django/db/models/fields/__init__.py:1416: RuntimeWarning: DateTimeField Reservation.startTime received a naive datetime (2022-05-30 00:00:00) while time zone support is active.
+    warnings.warn("DateTimeField %s received a naive datetime (%s)"
+
+- When selecting try to only display reservations that falls within the given period. currently even if a single reservation is within the period it returns the whole reservation set (Done)
