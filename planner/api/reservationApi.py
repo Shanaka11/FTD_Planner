@@ -1,6 +1,7 @@
 # Python
 # Django
 from calendar import month
+from dateutil.relativedelta import relativedelta
 import datetime
 # Rest Framework
 from rest_framework.decorators import action
@@ -58,8 +59,8 @@ class ReservationApi(BaseApi):
                 if serializer.is_valid(raise_exception=True):
                     serializer.save()
                 if increment > 29:
-                    tempStart = tempStart + datetime.timedelta(months=1)
-                    tempEnd = tempEnd + datetime.timedelta(months=1)
+                    tempStart = tempStart + relativedelta(months = 1)
+                    tempEnd = tempEnd + relativedelta(months = 1)
                 else:
                     tempStart = tempStart + datetime.timedelta(days=increment)
                     tempEnd = tempEnd + datetime.timedelta(days=increment)
