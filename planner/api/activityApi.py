@@ -1,6 +1,7 @@
 # Python
 # Django
 import datetime
+from multiprocessing import context
 from urllib import response
 from django.db.transaction import atomic
 # Rest Framework
@@ -107,13 +108,17 @@ class ActivityApi(BaseApi):
         startDate = request.query_params.get("startDate")
         endDate = request.query_params.get("endDate")
 
-        startDate = datetime.datetime.strptime(startDate, "%Y%m%d").date()
-        endDate = datetime.datetime.strptime(endDate, "%Y%m%d").date()
+        startDate = datetime.datetime.strptime(startDate, "%Y-%m-%dT%H:%M:%S%z")
+        endDate = datetime.datetime.strptime(endDate, "%Y-%m-%dT%H:%M:%S%z")
 
-        # queryset = self.get_queryset().filter(reservation__startTime__range=[startDate, endDate])
         queryset = Activity.objects.filter(user=request.user)
         queryset = queryset.filter(reservation__startTime__range=[startDate, endDate]).distinct()
-        serializer = FullActivitySerializer(queryset, many=True)
+        serializer = FullActivitySerializer(
+            queryset, 
+            many=True, 
+            context={
+                'startDate': startDate, 
+                'endDate': endDate}
+            )
 
-        print(queryset.filter(reservation__startTime__range=[startDate, endDate]).distinct().query)
         return Response(serializer.data, status=200)

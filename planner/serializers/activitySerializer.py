@@ -1,6 +1,8 @@
 # Python
 # Django
 # Rest Framework
+from decimal import getcontext
+from multiprocessing import context
 from rest_framework.serializers import ModelSerializer
 # Local
 from ..models import Activity
@@ -12,7 +14,7 @@ class ActivitySerializer(ModelSerializer):
 
 class FullActivitySerializer(ModelSerializer):
 
-    reservations = ActivityReservationSerializer(source='reservation_set', many=True, read_only=True)
+    reservations = ActivityReservationSerializer(source='reservation_set', many=True, read_only=True, context=getcontext())
     class Meta:
         model = Activity
         fields = '__all__'
