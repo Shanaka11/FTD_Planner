@@ -20,4 +20,25 @@
 
 - When selecting try to only display reservations that falls within the given period. currently even if a single reservation is within the period it returns the whole reservation set (Done)
 
-- Write Tests
+- Add Input Validation
+    - startDate cannot be null (Done)
+    - endDate cannot be null (Done)
+    - startDate <= endDate (Done)
+    - if repeat != Never then validUntil != null (Done)
+    - validUntil > endDate (Done)
+
+- Refactor - Move update Reservation Logic to the reservation Api (Done)
+
+- Write Tests (Done)
+    - Create Activities (Done)
+    - Create Reservations
+        - Never (Done)
+        - Daily (Done)
+        - Weekly (Done)
+        - Biweekly (Done)
+        - Monthly (Done)
+    - Update Reservations (Done)
+    - Delete Reservations (Done)
+    - Fetch Reservations (Done)
+    - Fetch Active Reservations (Done)
+    - Input validation (Done)
