@@ -1,7 +1,7 @@
 # Python
 # Django
 import datetime
-import pytz
+from multiprocessing import context
 from django.db.transaction import atomic
 # Rest Framework
 from rest_framework.decorators import action
@@ -19,6 +19,13 @@ class ActivityApi(BaseApi):
     serializer_class = ActivitySerializer
     queryset = Activity.objects.all()
     filterset_class = ActivityFilter
+
+    # def get_serializer_context(self):
+    #     context = super().get_serializer_context()
+    #     context.update({ 'endTime': self.request.data.get('endTime') })
+    #     # print(context)
+    #     print(self.request.data)
+    #     return context
 
     # Only show data connected to the user
     def get_queryset(self):
@@ -47,8 +54,8 @@ class ActivityApi(BaseApi):
         tempRequest.data['user'] = request.user.id
 
         # Remove the reservation details
-        startTime = tempRequest.data.pop("startTime")
-        endTime = tempRequest.data.pop("endTime")
+        startTime = tempRequest.data.get("startTime")
+        endTime = tempRequest.data.get("endTime")
 
         response =  super().create(tempRequest, *args, **kwargs)
         # After creating the activity make the reservations
@@ -87,19 +94,12 @@ class ActivityApi(BaseApi):
         response = super().update(tempRequest, *args, **kwargs)
 
         if oldActivity.repeat != request.data["repeat"] or oldActivity.repeatUntil != request.data["repeatUntil"]:
-            # Remove all future occurances
-            today = datetime.datetime.now(pytz.utc)
-            reservations = Reservation.objects.filter(activity = request.data['id'])
-            reservations = reservations.filter(endTime__gte=today).delete()
-            # Regenarate from the latest date
-            # If startDate > today then generate from startDate, else generateFrom today
-            ReservationApi.makeReservations({
-                "activity": tempRequest.data["id"],
-                "startTime": tempRequest.data["startTime"],
-                "endTime": tempRequest.data["endTime"],
+            ReservationApi.regenarateReservations({
+                "id": request.data["id"],
+                "startTime": tempRequest.data['startTime'],
+                "endTime": tempRequest.data['endTime'],
                 "repeat": tempRequest.data['repeat'],
-                "repeatUntil": tempRequest.data['repeatUntil'],
-                "today": today
+                "repeatUntil": tempRequest.data.get('repeatUntil')
             })
 
         return response

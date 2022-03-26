@@ -1,6 +1,6 @@
 # Python
+import pytz
 # Django
-from calendar import month
 from dateutil.relativedelta import relativedelta
 import datetime
 # Rest Framework
@@ -38,19 +38,39 @@ class ReservationApi(BaseApi):
     def destroy(self, request, *args, **kwargs):
         return super().destroy(request, *args, **kwargs)
 
+    # Regenarate Reservations
+    def regenarateReservations(reservationData):
+        # Remove all future occurances
+        today = datetime.datetime.now(pytz.utc)
+        reservations = Reservation.objects.filter(activity = reservationData['id'])
+        reservations = reservations.filter(endTime__gte=today).delete()
+        # Regenarate from the latest date
+        # If startDate > today then generate from startDate, else generateFrom today
+        ReservationApi.makeReservations({
+            "activity": reservationData["id"],
+            "startTime": reservationData["startTime"],
+            "endTime": reservationData["endTime"],
+            "repeat": reservationData['repeat'],
+            "repeatUntil": reservationData['repeatUntil'],
+            "today": today
+        })
+
     # Make Reservations
     def makeReservations(reservationData):
-        # Make Reservations & Handle Overlaps
         tempStart = reservationData["startTime"]
         tempEnd = reservationData["endTime"]
         repeat = reservationData["repeat"]
-        today = reservationData["today"]
-        repeatUntil = datetime.datetime.strptime(reservationData["repeatUntil"],'%Y-%m-%dT%H:%M:%S%z')
+        today = reservationData.get("today")
+
+        if reservationData["repeatUntil"] is not None:
+            repeatUntil = datetime.datetime.strptime(reservationData["repeatUntil"],'%Y-%m-%dT%H:%M:%S%z')
+        else:
+            repeatUntil = None
 
         def makeReservation(data, increment):
             tempStart = datetime.datetime.strptime(data["startTime"], '%Y-%m-%dT%H:%M:%S%z')
             tempEnd = datetime.datetime.strptime(data["endTime"], '%Y-%m-%dT%H:%M:%S%z')
-            
+                
             if today is not None:
                 while tempStart < today:
                     if increment > 29:
@@ -61,8 +81,10 @@ class ReservationApi(BaseApi):
             while(tempEnd < repeatUntil):
                 data["startTime"] = tempStart
                 data["endTime"] = tempEnd
-                
-                serializer = ReservationSerializer(data=data)
+
+                serializer = ReservationSerializer(
+                    data=data,
+                )
                 if serializer.is_valid(raise_exception=True):
                     serializer.save()
                 if increment > 29:
